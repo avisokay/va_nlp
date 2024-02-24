@@ -32,6 +32,15 @@ atomicwrites==1.4.0
 attrs @ file:///Users/ec2-user/ci_py311/attrs_1678315289647/work
 Automat @ file:///tmp/build/80754af9/automat_1600298431173/work
 autopep8 @ file:///opt/conda/conda-bld/autopep8_1650463822033/work
+azure-ai-ml==1.13.0
+azure-common==1.1.28
+azure-core==1.30.0
+azure-identity==1.15.0
+azure-mgmt-core==1.4.0
+azure-storage-blob==12.19.0
+azure-storage-file-datalake==12.14.0
+azure-storage-file-share==12.15.0
+azureml==0.2.7
 Babel @ file:///Users/ec2-user/ci_py311/babel_1678318085010/work
 backcall @ file:///home/ktietz/src/ci/backcall_1611930011877/work
 backoff==2.2.1
@@ -41,7 +50,7 @@ backports.weakref==1.0.post1
 bcrypt @ file:///Users/ec2-user/ci_py311/bcrypt_1678325873219/work
 beautifulsoup4 @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_bczxn9gqkq/croot/beautifulsoup4-split_1681493044307/work
 binaryornot @ file:///tmp/build/80754af9/binaryornot_1617751525010/work
-bitsandbytes==0.41.3.post2
+bitsandbytes==0.40.2
 black @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_1f1pcodmuo/croot/black_1680737253550/work
 bleach @ file:///opt/conda/conda-bld/bleach_1641577558959/work
 blinker==1.7.0
@@ -97,6 +106,7 @@ dill @ file:///Users/ec2-user/ci_py311/dill_1678323290904/work
 diskcache==5.6.3
 distributed @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_95i88jlqtp/croot/distributed_1686866052419/work
 distro==1.9.0
+docopt==0.6.2
 docstring-to-markdown @ file:///Users/ec2-user/ci_py311/docstring-to-markdown_1678326320721/work
 docutils @ file:///Users/ec2-user/ci_py311/docutils_1678316143314/work
 docx2txt==0.8
@@ -115,6 +125,7 @@ flake8 @ file:///Users/ec2-user/ci_py311/flake8_1678326404511/work
 Flask @ file:///Users/ec2-user/ci_py311/flask_1678380788105/work
 flatbuffers==23.5.26
 fonttools==4.25.0
+frozendict==2.4.0
 frozenlist @ file:///Users/ec2-user/ci_py311/frozenlist_1678318685088/work
 fsspec @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_daw1qq7n6u/croot/fsspec_1682526931173/work
 future @ file:///Users/ec2-user/ci_py311_2/future_1679335881731/work
@@ -124,15 +135,18 @@ gitdb==4.0.11
 GitPython==3.1.40
 glob2 @ file:///home/linux1/recipes/ci/glob2_1610991677669/work
 gmpy2 @ file:///Users/ec2-user/ci_py311/gmpy2_1678380831980/work
+google-api-core==2.17.1
 google-auth==2.27.0
 google-auth-oauthlib==1.2.0
 google-pasta==0.2.0
+googleapis-common-protos==1.62.0
 greenlet @ file:///Users/ec2-user/ci_py311/greenlet_1678323340336/work
 grpcio==1.60.0
 h11==0.14.0
 h5py @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_a4au6npi7q/croot/h5py_1691589712522/work
 HeapDict @ file:///Users/ktietz/demo/mc3/conda-bld/heapdict_1630598515714/work
 holoviews @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_3eb8ci9zf1/croot/holoviews_1693378050281/work
+html5lib==1.1
 httpcore==1.0.2
 httptools==0.6.1
 httpx==0.26.0
@@ -158,6 +172,7 @@ ipykernel @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_
 ipython @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_05skbxaflp/croot/ipython_1694181365614/work
 ipython-genutils @ file:///tmp/build/80754af9/ipython_genutils_1606773439826/work
 ipywidgets @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_f5atknkudc/croot/ipywidgets_1679394812720/work
+isodate==0.6.1
 isort @ file:///tmp/build/80754af9/isort_1628603791788/work
 itemadapter @ file:///tmp/build/80754af9/itemadapter_1626442940632/work
 itemloaders @ file:///opt/conda/conda-bld/itemloaders_1646805235997/work
@@ -230,10 +245,14 @@ ml-dtypes==0.2.0
 monotonic==1.6
 more-itertools @ file:///tmp/build/80754af9/more-itertools_1637733554872/work
 mpmath @ file:///private/var/folders/c_/qfmhj66j0tn016nkx_th4hxm0000gp/T/abs_8fyoqwupl2/croot/mpmath_1690848275746/work
+msal==1.26.0
+msal-extensions==1.1.0
 msgpack @ file:///Users/ec2-user/ci_py311/msgpack-python_1678318264150/work
+msrest==0.7.1
 multidict @ file:///Users/ec2-user/ci_py311/multidict_1678318765630/work
 multipledispatch @ file:///Users/ec2-user/ci_py311/multipledispatch_1678392901644/work
 multiprocess @ file:///Users/ec2-user/ci_py311/multiprocess_1678381867399/work
+multitasking==0.0.11
 munkres==1.1.4
 mypy-extensions @ file:///private/var/folders/c_/qfmhj66j0tn016nkx_th4hxm0000gp/T/abs_feh7ysu6du/croot/mypy_extensions_1695130941162/work
 navigator-updater @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_e9sgoc1006/croot/navigator-updater_1695210192316/work
@@ -246,6 +265,7 @@ networkx @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_6
 nltk @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_3dn6s26pv5/croot/nltk_1688114157897/work
 notebook @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_e3bsub1nom/croot/notebook_1690984822307/work
 notebook_shim @ file:///Users/ec2-user/ci_py311/notebook-shim_1678318293647/work
+num2words==0.5.13
 numba @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_93pzbiav_e/croot/numba_1684245526578/work
 numexpr @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_1b50c1js9s/croot/numexpr_1683227065029/work
 numpy @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_bdk7p7tnsw/croot/numpy_and_numpy_base_1682520579379/work
@@ -254,8 +274,11 @@ oauthlib==3.2.2
 omegaconf==2.3.0
 onnx==1.15.0
 onnxruntime==1.15.1
-openai==1.6.1
+openai==0.28.0
 openapi-schema-pydantic==1.2.4
+opencensus==0.11.4
+opencensus-context==0.1.3
+opencensus-ext-azure==1.1.13
 opencv-python==4.9.0.80
 openpyxl==3.0.10
 opt-einsum==3.3.0
@@ -274,6 +297,8 @@ patsy==0.5.3
 pdf2image==1.16.3
 pdfminer.six==20221105
 pdfplumber==0.10.3
+peewee==3.17.1
+peft==0.4.0
 pep8==1.7.1
 pexpect @ file:///tmp/build/80754af9/pexpect_1605563209008/work
 pickleshare @ file:///tmp/build/80754af9/pickleshare_1606932040724/work
@@ -307,6 +332,7 @@ pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
 pyct @ file:///Users/ec2-user/ci_py311/pyct_1678378955854/work
 pycurl @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_5fqjx6q8cq/croot/pycurl_1686662466370/work
 pydantic @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_35o4y5fj35/croot/pydantic_1686125728261/work
+pydash==7.0.5
 pydeck==0.8.1b0
 PyDispatcher==2.0.5
 pydocstyle @ file:///Users/ec2-user/ci_py311/pydocstyle_1678378981125/work
@@ -404,6 +430,7 @@ starlette==0.27.0
 statsmodels @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_6ceh3qgte0/croot/statsmodels_1689937269297/work
 streamlit==1.29.0
 streamlit-extras==0.0.9
+strictyaml==1.7.3
 sympy @ file:///Users/ec2-user/ci_py311_2/sympy_1679338337660/work
 syntok==1.4.4
 tables @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_db4hksk56p/croot/pytables_1691621493468/work
@@ -426,6 +453,7 @@ threadpoolctl @ file:///Users/ktietz/demo/mc3/conda-bld/threadpoolctl_1629802263
 three-merge @ file:///tmp/build/80754af9/three-merge_1607553261110/work
 tifffile @ file:///private/var/folders/c_/qfmhj66j0tn016nkx_th4hxm0000gp/T/abs_ffr7rfhtkd/croot/tifffile_1695107463579/work
 tika==2.6.0
+tiktoken==0.6.0
 timm==0.9.12
 tinycss2 @ file:///Users/ec2-user/ci_py311/tinycss2_1678317366076/work
 tldextract @ file:///opt/conda/conda-bld/tldextract_1646638314385/work
@@ -438,7 +466,8 @@ torchvision==0.16.2
 tornado @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_aeotsmw12l/croot/tornado_1690848274212/work
 tqdm @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_03acd6t6ca/croot/tqdm_1679561866522/work
 traitlets @ file:///Users/ec2-user/ci_py311/traitlets_1678316097905/work
-transformers @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_8ch0ar2_dx/croot/transformers_1693308333741/work
+transformers==4.31.0
+trl==0.4.7
 Twisted @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_3cf4rqmb9n/croot/twisted_1683796897214/work
 typing-inspect==0.9.0
 typing_extensions @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_35a9251r5y/croot/typing_extensions_1690297487409/work
@@ -476,6 +505,7 @@ xyzservices @ file:///Users/ec2-user/ci_py311/xyzservices_1678325391212/work
 y-py @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_7dvnlnkj12/croot/y-py_1683555629284/work
 yapf @ file:///tmp/build/80754af9/yapf_1615749224965/work
 yarl @ file:///Users/ec2-user/ci_py311/yarl_1678323149735/work
+yfinance==0.2.36
 ypy-websocket @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_75t89iv95n/croot/ypy-websocket_1684171758794/work
 zict @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_59schmcson/croot/zict_1682698747213/work
 zipp @ file:///Users/ec2-user/ci_py311/zipp_1678318061389/work
