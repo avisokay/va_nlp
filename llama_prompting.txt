@@ -1,0 +1,58 @@
+https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF
+
+Llama-2-7b-chat-Q2_K 2.83GB Small Model
+- First asked for top 20 most common causes of death worldwide. Said it couldn't give a list and rambled. 
+- Given a short clear narrative, asked if it could classify specific COD. Gave long rambling answer.
+- Prompted it to respond specifically with only its best guess in less than 5 words. Answered with a list of possibilities A-E followed by qualifier that it doesn't have enough information to confidently respond. 
+- Given definition of cause of death and prompted with a narrative, gives long response with correct answer at the beginning.
+- Asked to quantify it's uncertainty, it says high uncertainty.
+
+Try on Llama-2-7b-chat-Q8_0 7.16GB Big Model and Llama-2-7b-chat-Q4_K_M 6.58GB Medium Model
+- Given list of output options and prompted to select from a list, provided narrative example, returns paragraph of text. 
+- 4 shot. Gives A:correct answer followed by more guesses B, C, D, E. 
+- Asked to respond with exact string match, just cannot do it. 
+- looped through several examples. got several semantically correct but failed to return exact string match. For example, if true answer is 'Road Traffic', it gives 'It was a car crash.'
+- Tried some naive fuzzy string matching. Assign COD from list if COD label appears in first 30 characters of response. 
+- Even with string matching, impossible to evaluate accuracy at scale.
+- On one attempt, it included a thinking emoji in it's response despite being prompted to give a term from constrained list.
+- Average query took 8-15 minutes to run for a single narrative. 
+
+Prompts:
+
+'Given a text narrative about a death, attribute the most likely cause of death. Respond only with the cause of death, or "other" if you are not sure. Narrative: '
+
+'Given a text narrative about a death, attribute the most likely cause of death from this list: pneumonia, diarrhea, malaria, road traffic, drowning, cardiovascular disease, fires, meningitis, venomous animal, falls, encephalitis, sepsis, measles, aids, tuberculosis. Respond only with the cause of death from the list, or "other" if you are not sure. Narrative: '
+
+'Given a text narrative about a death, attribute the most likely cause of death from this list: pneumonia, diarrhea, malaria, road traffic, drowning, cardiovascular disease, fires, meningitis, venomous animal, falls, encephalitis, sepsis, measles, aids, tuberculosis. Respond only with the one word cause of death from the list. Narrative: '
+
+'Given a text narrative about a death, attribute the most likely cause of death from this list: pneumonia, diarrhea, malaria, road traffic, drowning, cardiovascular disease, fires, meningitis, venomous animal, falls, encephalitis, sepsis, measles, aids, tuberculosis. Your response must match exactly to one of the options from this list. Narrative: '
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

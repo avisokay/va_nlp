@@ -1,0 +1,248 @@
+Model name: gpt-35-turbo
+Model version: 0301
+Version update policy: Once the current version expires.
+Deployment type: Standard
+Content Filter: va_content_filter
+Tokens per Minute Rate Limit (thousands): 240
+Rate limit (Tokens per minute): 240000
+Rate limit (Requests per minute): 1440
+
+Model name: gpt-4-32k
+Model version: 0613
+Version update policy: Once a new default version is available.
+Deployment type: Standard
+Content Filter: va_content_filter
+Tokens per Minute Rate Limit (thousands): 200
+Rate limit (Tokens per minute): 200000
+Rate limit (Requests per minute): 1200
+
+GPT-35-turbo
+temperature set to 0
+- Started by asking for top 20 most common causes of death globally. Got a list with a short description for each COD. Seemed plausible.
+- Asked binary "is this narrative an example of X cause of death". Did well with this task.
+- Initial zero-shot prompt: input narrative, provide context for each COD, ask to give best guess. 
+- Gave longer answers than what was asked for. Several semantically correct but not in the proper format for matching.
+- Grouped COD into 5 broad categories up from the 34 categories in the raw data.
+- Updated prompt and asked for output in specific format according to these 5 broader labels.
+- Achieved accuracy of 0.66.
+- Added fewshot prompt by taking a random subset of 5 narrative examples and their labels. Augment the base prompt by passing these few shot examples and their labels before the baseline zeroshot prompt. 
+- Accuracy fell to 0.52.
+- Upon closer inspection, this is likely caused by poor selection of few shot examples. The model was responsive to the less helpful prompt - it severely overpredicted "aids-tb" because one of the training examples for aids-tb was "the patient had no further comment".
+
+GPT-4-32k 
+temperature set to 0
+- Refined zero shot prompt achieved accuracy of 0.38. Returned a 1503 "not enough information" results not in the COD list. 
+- Upon closer inspection, it appears that the narratives associated with these labels contain no useful information.
+- After removing these 1503 unclassified observations the accuracy jumps up to 0.75. 
+- For a more better fewshot prompting, I manually selected 30 examples. 1 example for each COD for each site. 25 narrative/label pairs passed ahead of the baseline zeroshot prompt to predict narratives for the 6th leftout site. 
+- Few shot accuracy fell to 0.45. All responses are in the COD, suggesting that the few shot prompt forced GPT-4-32k to assign a label even in cases without enough information to classify. Likely due to lack of 'unclassified' category and permission to fail to classify in the prompt. 
+
+Baseline Zeroshot Prompt 1 (222 tokens):
+prompt = '''
+    <narrative>
+    INPUT
+    </narrative>
+
+    <labels>
+    aids-tb: Patient died resulting from HIV-AIDs or Tuberculosis.
+    communicable: Patient died from a communicable disease which is defined as 
+    illnesses that spread from one human to another such as pneumonia, diarrhea 
+    or dysentery.
+    external: Patient died from external causes including as accidents like fires,
+    drowning, road traffic, falls, poisonous animals and violence like suicide, 
+    homicide, or other injuries.
+    maternal: Patient died from complications related to pregnancy or childbirth 
+    including from severe bleeding, sepsis, pre-eclampsia and eclampsia.
+    non-communicable: Patient died from a non-communicable disease which is defined
+    as illnesses that cannot be transmitted from one human to another such as cirrhosis,
+    epilepsy, acute myocardial infarction, copd, renal failure, cancer, diabetes,
+    stroke, malaria, asthma, or other non-communicable diseases.
+    </labels>
+
+    What is the most likely cause of death labels associated with the narrative?
+'''
+
+Refined Zeroshot Prompt with 5 Broad COD and explicit output coercion (231 tokens):
+prompt = '''
+    <narrative>
+    INPUT
+    </narrative>
+
+    <labels>
+    aids-tb: Patient died resulting from HIV-AIDs or Tuberculosis.
+    communicable: Patient died from a communicable disease which is defined as 
+    illnesses that spread from one human to another such as pneumonia, diarrhea 
+    or dysentery.
+    external: Patient died from external causes including as accidents like fires,
+    drowning, road traffic, falls, poisonous animals and violence like suicide, 
+    homicide, or other injuries.
+    maternal: Patient died from complications related to pregnancy or childbirth 
+    including from severe bleeding, sepsis, pre-eclampsia and eclampsia.
+    non-communicable: Patient died from a non-communicable disease which is defined
+    as illnesses that cannot be transmitted from one human to another such as cirrhosis,
+    epilepsy, acute myocardial infarction, copd, renal failure, cancer, diabetes,
+    stroke, malaria, asthma, or other non-communicable diseases.
+    </labels>
+
+    <options>
+    aids-tb, communicable, external, maternal, non-communicable
+    </options>
+
+
+    Which label best applies applies to the narrative (aids-tb, communicable, external, maternal, non-communicable)?
+    If you are not sure, return your best guess.
+    Limit your response to one of the options exactly as it appears in the list.
+'''
+
+Few shot examples without 'unclassified' examples (2795 tokens):
+## mexico
+mexico = [
+    # non-communicable
+    {'role': 'user',
+  'content': 'my mothers condition was already very poor due to the diabtes and the ulcers were something extra that affected her health. confuso!!she got sick to her stomach. she is taken to a private doctor where its suggested that an endoscopy be performed. they do this and they are informed that she has ulcers in her stomach.'},
+    {'role': 'assistant', 'content': 'non-communicable'},
+    # communicable
+        {'role': 'user',
+  'content': 'we were left wondering whether we also have a health condition, and also my daughter is pregnant. we would like to know the risks as a family, and be certain that we will be vaccinated.i collected all data from the death certificate. the informant asked me to do so because she has questions regarding her husbands death. she asked for an autopsy and they told her it was influenza.'},
+    {'role': 'assistant', 'content': 'communicable'},
+    # external
+    {'role': 'user',
+  'content': 'no comment.the lady mentioned that her son fell on his back and she was told that his lung was punctured, but that everything possible would be done to save the young man. but his blood pressure started to drop which caused a cardiac arrest. the young man was a very healthy person.'},
+    {'role': 'assistant', 'content': 'external'},
+    # maternal
+        {'role': 'user',
+  'content': 'when we took her out of the hospital, a private doctor told us that she had very serious pneumonia symptoms along with the high blood pressure that had not been regularized. when we hospitalized her again, she was immediately tubed because it was very necessary. she couldnt breathe, she was choking. she died the following day at 4 in the afternoon. we think that she got infected with pneumonia at the hospital at [place] in [place2]. at the same time, there were many pregnant women and newborns born with pneumonia.the interview went smoothly.'},
+    {'role': 'assistant', 'content': 'maternal'},
+    # aids-tb
+    {'role': 'user',
+  'content': 'my son was very reserved. he didnt tell me anything, and if he felt sick he withstood the pain.[person] did not want to talk about her sons illness because he had had aids. when i asked if he had had aids she hesitated in telling me. she also told me that months before her son had come to live with her since he lived with a friend. because of that she did not know a lot about his illness.'},
+    {'role': 'assistant', 'content': 'aids-tb'}
+]
+
+## ap
+ap = [
+    # non-communicable
+    {'role': 'user',
+  'content': 'my father was having tb and lungs problem. we have taken proper care of him. he was shown at [hospital] also. there, they removed water from his lungs. after that he suffered with breathing problem also. he fell unconscious. lastly, he was died of cardiac arrest.'},
+    {'role': 'assistant', 'content': 'non-communicable'},
+    # communicable
+        {'role': 'user',
+  'content': 'my husband had fever from 3days. so we took him to the [hospital]. they did the check-up and told us that some more tests must be done. they referred us to take him to the [hospital2] which is in [place]. so we went to the [hospital2]. his blood test was done and it was sent to [place2] for report. while he was receiving the treatment in [hospital2], he died after some days. later, they packed his dead body in a cover and gave it to us. we went for the cremation.'},
+    {'role': 'assistant', 'content': 'communicable'},
+    # external
+    {'role': 'user',
+  'content': 'he was hit by aps rtc bus, when he was crossing the road at 7 pm. his left leg was run over by bus and it was completely crunched. we took him in ambulance and joined him in [hospital]. injured leg was operated. but, he died on midnight at 2.35 am. before death he lapsed back into coma and did not speak anything.'},
+    {'role': 'assistant', 'content': 'external'},
+    # maternal
+        {'role': 'user',
+  'content': 'when our daughter was a pregnant, she had high blood pressure. during her delivery, she gave birth to twins. due to this also, she became even weaker. before she was about to die, she had even fits. then she had high b.p too. because of that, she died.'},
+    {'role': 'assistant', 'content': 'maternal'},
+    # aids-tb
+    {'role': 'user',
+  'content': 'at first she was treated for her tb at the [hospital]. then they have sent us to [hospital2]. at the [hospital2] they discharged after 10 days, and gave some medicines asked us to use the same regularly. tb recurred after 6 months. we went to [hospital2] again. this time it was very serious for her. she was expired here while taking treatment.'},
+    {'role': 'assistant', 'content': 'aids-tb'}
+]
+
+## up
+up = [
+    # non-communicable
+    {'role': 'user',
+  'content': 'the deceased suffered a heart attack 2 days ago and experienced trouble breathing. the deceased was taken to a private doctor and was taken to [hospital] later.'},
+    {'role': 'assistant', 'content': 'non-communicable'},
+    # communicable
+        {'role': 'user',
+  'content': 'the deceased had a fever of a 106 degrees, which was later cured by medication. in 3 days, her abdomen had swollen up rapidly, and remained so till death. she suffered low blood pressure due to frequent excretion caused by loose motion. she had undergone a gall bladder operation 15 years ago. this is why she vomited everyday in the morning. there was swelling on her whole body.'},
+    {'role': 'assistant', 'content': 'communicable'},
+    # external
+    {'role': 'user',
+  'content': 'the deceased had been burnt and had lost mental balance and died within 1.5 hours of the accident.'},
+    {'role': 'assistant', 'content': 'external'},
+    # maternal
+        {'role': 'user',
+  'content': 'the deceased had been pregnant and had suffered convulsion and her breathing was rapid.'},
+    {'role': 'assistant', 'content': 'maternal'},
+    # aids-tb
+    {'role': 'user',
+  'content': 'the deceased began to suffer from a slight cough and then found trouble speaking. the doctor said it was asthma. the deceased sometimes suffered from asthma. boils had formed in the mouth due to a medicines reaction. while coughing a lot of mucous would come out. the boils had been cured later. the doctor also said tuberculosis. the deceased had begun to experience trouble breathing.'},
+    {'role': 'assistant', 'content': 'aids-tb'}
+]
+
+## dar
+dar = [
+    # non-communicable
+    {'role': 'user',
+  'content': 'participant thanked very much for services which provided by nurses and doctors especially [hospital].also he said that source of death caused by liver cancer'},
+    {'role': 'assistant', 'content': 'non-communicable'},
+    # communicable
+        {'role': 'user',
+  'content': 'the death is caused by malaria fever_x000d__x000d_\nparticipant are complained with for the services provided at [hospital] since the deceased was introdeced to him a quinin drip dose but after the copletion of drip(quinin)they gave other quinin t'},
+    {'role': 'assistant', 'content': 'communicable'},
+    # external
+    {'role': 'user',
+  'content': 'client commended that the deceaded was hurt with knife kuchomwa'},
+    {'role': 'assistant', 'content': 'external'},
+    # maternal
+        {'role': 'user',
+  'content': 'according the participant opinion the deceased died due to eph bodema protein hypertension gestosis at the time of delivering a baby out'},
+    {'role': 'assistant', 'content': 'maternal'},
+    # aids-tb
+    {'role': 'user',
+  'content': 'the patricipant think that relative death caused by hiv /aids though he tb too'},
+    {'role': 'assistant', 'content': 'aids-tb'}
+]
+
+## bohol
+bohol = [
+    # non-communicable
+    {'role': 'user',
+  'content': 'she has history of high bp and she was given medication for her maintenance in order for her to take when her bp increases. she was asymptomatic and she even managed to do the household chores. may 1 on that morning while doing the household chores she complained of headache so we let her took her medication. after taking the meds we noticed that she become unconscious so we directly brought her to [hospital]. the doctor revealed that she has an arrest. she also snorred loud and on the ff. day she died.'},
+    {'role': 'assistant', 'content': 'non-communicable'},
+    # communicable
+        {'role': 'user',
+  'content': 'she became sick for 4 days before she died. she had fever, unable to rise from bed and rales noted whenever she breathes. on the first day, we though that her bp was elevated. her back that time was always wet and she had productive cough. paracetamol was given to her but symptom persisted. we brought her to [hospital] and the doctor mentioned that phlegms are noted in his lungs. she has pneumonia, and shes in chronic condition. the following day, she died. we refused to intubate her because we dont have money anymore.'},
+    {'role': 'assistant', 'content': 'communicable'},
+    # external
+    {'role': 'user',
+  'content': 'he never complained of any health problems. [date] he was walking when suddenly and armed man intentionally passed by an shoot him with the gun. some neighbor saw the incident and rescued him and they brought him directly to [hospital]. in the hospital it revealed that his lung was affected by the bullet that caused him to suffered an arrest. ont he following day he expired.'},
+    {'role': 'assistant', 'content': 'external'},
+    # maternal
+        {'role': 'user',
+  'content': 'march [year]. she was admitted to the hospital because she had difficulty breathing. it happened suddently. she didnt have any illness before. she is 8 months pregnant. the doctor said she has a heart disease. april 4, [year]. she had induced labor because she didnt feel the baby move anymore. she still had difficulty breathing. the baby was dead upon delivery. april 6, [year]. she died, too.'},
+    {'role': 'assistant', 'content': 'maternal'},
+    # aids-tb
+    {'role': 'user',
+  'content': 'the wife didnt know if her husband had tb but eversince they married, he was always clearing his throat. may [year]. he coughed blood and was very weak. they consulted [doctor] and he advised for an xray first. the deceased didnt agree. 06/19/ [year]. after constant convincing, he agreed for an xray but he was directly admitted to the hospital, instead. 06/20/ [year]. the doctor said he had ptb. he died.'},
+    {'role': 'assistant', 'content': 'aids-tb'}
+]
+
+## pemba
+pemba = [
+    # non-communicable
+    {'role': 'user',
+  'content': 'the respondant explained that the deceased went to the hospital for extracting tooth and after that he/she got a swelling on the mouth and face and died because of that.'},
+    {'role': 'assistant', 'content': 'non-communicable'},
+    # communicable
+        {'role': 'user',
+  'content': 'respondent explained that deceaseda died because was seriously ill and unlikely to survive'},
+    {'role': 'assistant', 'content': 'communicable'},
+    # external
+    {'role': 'user',
+  'content': 'deceased died for drowning after the boat they travelled with cought fire'},
+    {'role': 'assistant', 'content': 'external'},
+    # maternal
+        {'role': 'user',
+  'content': 'she had eclampsia and lost consciousness so died because of pregnancy complications'},
+    {'role': 'assistant', 'content': 'maternal'},
+    # aids-tb
+    {'role': 'user',
+  'content': 'respondent explained that deceased died due to tb that he suffered for more than three months'},
+    {'role': 'assistant', 'content': 'aids-tb'}
+]
+
+
+
+
+
+
+
+
