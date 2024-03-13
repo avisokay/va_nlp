@@ -36,6 +36,23 @@ temperature set to 0
 - After removing these 1503 unclassified observations the accuracy jumps up to 0.75. 
 - For a more better fewshot prompting, I manually selected 30 examples. 1 example for each COD for each site. 25 narrative/label pairs passed ahead of the baseline zeroshot prompt to predict narratives for the 6th leftout site. 
 - Few shot accuracy fell to 0.45. All responses are in the COD, suggesting that the few shot prompt forced GPT-4-32k to assign a label even in cases without enough information to classify. Likely due to lack of 'unclassified' category and permission to fail to classify in the prompt. 
+- Created new zero shot prompt that includes an 'unclassified' label and option to return if there is not enough information in the narrative.
+- Tested on a dozen examples (temp=1), half of which are uninformative narratives. Correctly labeled 12/12 compared to 11/12 for base prompt which returned a COD label when it should have returned unclassified. 
+- Returned to temp=0 for the remainder.
+- Added specific unclassified examples to the few shot prompt and tested on the new set. 
+- Baseline few shot incorrectly predicts 'non-communicable' for all unhelpful narratives. Correctly classifies useful narratives.
+- Few shot (3060 tokens) with 'unclassified' examples correctly identifies all 'unclassified' cases, but misclassifies 1/5 of the useful narratives. 
+- Baseline few shot reduced form (1 example for each COD instead of 6) (using mexico examples) (577 tokens) fail to classify unuseful narratives, selecting [aids-tb, non-communicable, aids-tb, non-communicable, non-communicable, external, non-communicable].
+- Few shot including an 'unclassified' example (590 tokens) correctly identifies all unuseful narratives, but misclassifies 1/5 of the useful narratives.
+- Tested zero shot with unclassified and fewshot with unclassified on the first 10 narratives in the dataset. 
+- Found that zero shot did well, but few shot was overpredicting 'external' where it should be predicting 'non-communicable'. 
+- Changed the few shot example for 'external' to a more straightforward narrative about a bus accident. 
+- Reran fewshot with this new example and it now mirrors the zero shot predictions for the first 10 examples.
+- Ran entire dataset through both zeroshot (239 tokens) and fewshot (696 tokens) with unclassified option pipeline. 
+- Zeroshot achieved accuracy 0.7816268362201272 and f1 of 0.7529120974491796 after dropping 2202 unclassified responses. 
+- Fewshot achieved accuracy of 0.7814904374587821 and f1 of 0.7587305846519331 after dropping 2214 unclassified responses.
+
+
 
 Baseline Zeroshot Prompt 1 (222 tokens):
 prompt = '''
@@ -238,6 +255,55 @@ pemba = [
   'content': 'respondent explained that deceased died due to tb that he suffered for more than three months'},
     {'role': 'assistant', 'content': 'aids-tb'}
 ]
+
+Zeroshot prompt allowing for unclassified response:
+"""
+<narrative>
+INPUT
+</narrative>
+
+<labels>
+aids-tb: Patient died resulting from HIV-AIDs or Tuberculosis.
+communicable: Patient died from a communicable disease such as pneumonia, diarrhea 
+or dysentery.
+external: Patient died from external causes such as fires,
+drowning, road traffic, falls, poisonous animals, suicide, 
+homicide, or other injuries.
+maternal: Patient died from pregnancy or childbirth 
+including from severe bleeding, sepsis, pre-eclampsia and eclampsia.
+non-communicable: Patient died from a non-communicable disease such as cirrhosis,
+epilepsy, acute myocardial infarction, copd, renal failure, cancer, diabetes,
+stroke, malaria, asthma.
+unclassified: narrative does not contain enough information to predict cause of death.
+</labels>
+
+<options>
+aids-tb, 
+communicable, 
+external, 
+maternal, 
+non-communicable,
+unclassified
+</options>
+
+Which label from options best applies applies to the narrative?
+If you are not sure, return your best guess.
+Limit your response to one of the options exactly as it appears in the list.
+"""
+
+Specific unclassified examples added to fewshot:
+['respondent thanked for being visited',
+ 'the client thanked for service which provided in the hospital_x000d__x000d_\nthe client transfer death certificate to their original home [place]',
+ 'no comment',
+ 'client had no additional point',
+ 'health  services should be universal , regardless social  or economic statusthe interview took place at home and was very relaxed.',
+ 'medical record didn't available and death certificate was sent to upcountry  to deceased's parents']
+
+
+
+
+
+
 
 
 
