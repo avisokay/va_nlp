@@ -35,7 +35,6 @@ def ppi_multi_class_pointestimate(
        
     Returns:
         ndarray: Prediction-powered point estimate of the multiclass logistic regression coefficients.
-
     """
     
     n = Y.shape[0]
