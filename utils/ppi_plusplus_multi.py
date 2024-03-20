@@ -8,8 +8,11 @@ from sklearn.linear_model import LogisticRegression
 from scipy import sparse
 from scipy.sparse import linalg
 from scipy.special import softmax as scipy_softmax
+from statsmodels.stats.weightstats import _zconfint_generic, _zstat_generic
 
-lbin = preprocessing.LabelBinarizer()
+# lbin = preprocessing.LabelBinarizer()
+
+lbin = OneHotEncoder()
 
 def ppi_multi_class_pointestimate(
     X,
@@ -35,7 +38,9 @@ def ppi_multi_class_pointestimate(
        
     Returns:
         ndarray: Prediction-powered point estimate of the multiclass logistic regression coefficients.
+
     """
+    lbin.fit(Y.reshape(-1,1))
     
     n = Y.shape[0]
     d = X.shape[1]
@@ -68,23 +73,30 @@ def ppi_multi_class_pointestimate(
 
         EY = get_EY(K,d)
         loss0 = 0
-        loss1 = 0
         for i in range(n):
             y = Y[i]
             Xi = X[i,:]
             Ey = EY[y,:,:]
             loss0 +=  -(Xi @ Ey) @ _theta + np.log(np.sum(np.exp(Xi @ EY @ _theta)))
-
-            yhat = Yhat[i]
-            Eyhat = EY[yhat,:,:]
-            loss1 += -(Xi @ Eyhat) @ _theta + np.log(np.sum(np.exp(Xi @ EY @ _theta)))
-
+        
+        loss1 = 0
         loss2 = 0
-        for i in range(N):
-            y_unlabeled = Yhat_unlabeled[i]
-            Ey_unlabeled = EY[y_unlabeled,:,:]
-            Xi_unlabeled = X_unlabeled[i,:]
-            loss2 += -(Xi_unlabeled @ Ey_unlabeled) @ _theta + np.log(np.sum(np.exp(Xi_unlabeled @ EY @ _theta)))
+        if lhat != 0:
+            for i in range(n):
+                y = Y[i]
+                Xi = X[i,:]
+                Ey = EY[y,:,:]
+
+                yhat = Yhat[i]
+                Eyhat = EY[yhat,:,:]
+                loss1 += -(Xi @ Eyhat) @ _theta + np.log(np.sum(np.exp(Xi @ EY @ _theta)))
+
+         
+            for i in range(N):
+                y_unlabeled = Yhat_unlabeled[i]
+                Ey_unlabeled = EY[y_unlabeled,:,:]
+                Xi_unlabeled = X_unlabeled[i,:]
+                loss2 += -(Xi_unlabeled @ Ey_unlabeled) @ _theta + np.log(np.sum(np.exp(Xi_unlabeled @ EY @ _theta)))
 
 
         loss = 1 / n * loss0 - lhat_curr / n * loss1 + lhat_curr / N * loss2
@@ -114,7 +126,7 @@ def ppi_multi_class_pointestimate(
         """
         theta is 1D array
         """
-        Y_onehot = lbin.fit_transform(Y.reshape(-1,1))
+        Y_onehot = lbin.transform(Y.reshape(-1,1))
         _theta_2D = theta_2d(_theta, K) 
         
         # by default class 0 is the reference class 
@@ -126,7 +138,7 @@ def ppi_multi_class_pointestimate(
 
     # gradient of the rectified loss
     def rectified_multiclass_logistic_grad(_theta):
-
+        
         return (
             lhat_curr/ N * gradient(X_unlabeled, Yhat_unlabeled, _theta, K)
             - lhat_curr / n * gradient(X, Yhat, _theta, K) +
@@ -168,6 +180,7 @@ def ppi_multi_class_pointestimate(
             grads,
             grads_hat,
             grads_hat_unlabeled,
+            hessian,
             inv_hessian,
         ) = _multiclass_ci_get_stats(
             ppi_pointest,
@@ -280,10 +293,10 @@ def _multiclass_ci_get_stats(
     """ modified from Stephen's R code 
         gradients and hessian are not averaged over sample size
     """
-    def multiclass_logistic_get_stats(Y, X, _theta):
-        
-        classes = np.sort(np.unique(Y))[::-1] 
-        K = len(classes)
+    def multiclass_logistic_get_stats(Y, X, classes, K, _theta):
+                
+        # classes = np.sort(np.unique(Y))[::-1] 
+        # K = len(classes)
         
         probs = softmax(_theta, X, K)
         probs_vec = probs[:,0:(K-1)].flatten(order='F')
@@ -331,11 +344,14 @@ def _multiclass_ci_get_stats(
 
             grads_hat_unlabeled[i, :] = grads_i
     
+    # classes = np.sort(np.unique(Y))[::-1] 
+    # K = len(classes)
+    
     # stats of labeled data
-    stats_X_Y = multiclass_logistic_get_stats(Y, X, pointest)
+    stats_X_Y = multiclass_logistic_get_stats(Y, X, classes, K, pointest)
     
     if use_unlabeled:
-        stats_unlabeled = multiclass_logistic_get_stats(Yhat_unlabeled, X_unlabeled, pointest)
+        stats_unlabeled = multiclass_logistic_get_stats(Yhat_unlabeled, X_unlabeled, classes, K,  pointest)
         hessian = 1/ (n+N) * (stats_X_Y['hessian'] + stats_unlabeled['hessian'])
     else:
         hessian = stats_X_Y['hessian']
@@ -449,7 +465,7 @@ def ppi_multiclass_logistic_ci(
     return {"pointest": ppi_pointest,
             "ci": ci_res, 
             "se":  np.sqrt(np.diag(Sigma_hat) / n), 
-            "lhat": lhat}
+            "lhat": lhat} 
 
 def _calc_lhat_glm(
     grads, grads_hat, grads_hat_unlabeled, inv_hessian, coord=None, clip=False
